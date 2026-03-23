@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iron Log — Workout Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-icon">IL</div>
+        <div>
+          <h1 class="brand-name">IRON LOG</h1>
+          <p class="brand-tagline">Train · Track · Progress</p>
+        </div>
+      </div>
+    </div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="plan">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Plan
+      </button>
+      <button class="tab-btn" data-tab="log">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Log
+      </button>
+      <button class="tab-btn" data-tab="onerm">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5h11"/><path d="M17.5 17.5h-11"/><circle cx="5" cy="6.5" r="2"/><circle cx="19" cy="6.5" r="2"/><circle cx="5" cy="17.5" r="2"/><circle cx="19" cy="17.5" r="2"/><line x1="12" y1="6.5" x2="12" y2="17.5"/></svg>
+        1RM
+      </button>
+      <button class="tab-btn" data-tab="metcon">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        METCON
+      </button>
+    </nav>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ==================== PLAN TAB ==================== -->
+    <section id="tab-plan" class="tab-content active">
+      <div class="section-header">
+        <h2>Workout Plans</h2>
+        <button class="btn btn-primary" id="btn-new-plan">+ New Plan</button>
+      </div>
+      <div id="plans-list" class="cards-grid"></div>
+    </section>
+
+    <!-- ==================== LOG TAB ==================== -->
+    <section id="tab-log" class="tab-content">
+      <div id="active-workout-banner" class="active-workout-card hidden">
+        <div class="active-workout-info">
+          <div class="active-pulse"></div>
+          <div>
+            <p class="active-label">ACTIVE WORKOUT</p>
+            <p id="active-workout-name" class="active-name">Workout</p>
+          </div>
+        </div>
+        <div class="active-timer-wrap">
+          <p id="active-timer" class="active-timer">0:00</p>
+          <button class="btn btn-sm btn-outline" id="btn-resume-workout">Resume</button>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h2>Workout Log</h2>
+        <button class="btn btn-primary" id="btn-start-workout">+ Log Workout</button>
+      </div>
+      <div id="log-list" class="cards-grid"></div>
+    </section>
+
+    <!-- ==================== 1RM TAB ==================== -->
+    <section id="tab-onerm" class="tab-content">
+      <div class="section-header">
+        <h2>1RM Calculator</h2>
+      </div>
+      <div class="card calc-card">
+        <div class="form-row three-col">
+          <div class="form-group">
+            <label>Exercise</label>
+            <input type="text" id="calc-exercise" placeholder="e.g. Back Squat" list="exercise-suggestions" autocomplete="off">
+            <datalist id="exercise-suggestions"></datalist>
+          </div>
+          <div class="form-group">
+            <label>Weight (lbs)</label>
+            <input type="number" id="calc-weight" placeholder="225" min="0" step="2.5">
+          </div>
+          <div class="form-group">
+            <label>Reps Performed</label>
+            <input type="number" id="calc-reps" placeholder="5" min="1" max="30">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" id="btn-calculate">Calculate 1RM</button>
+
+        <div id="calc-result" class="calc-result hidden">
+          <div class="onerm-headline">
+            <div>
+              <p class="onerm-label">Estimated 1RM</p>
+              <p id="onerm-exercise-name" class="onerm-exercise-name"></p>
+            </div>
+            <p id="onerm-value" class="onerm-value">—</p>
+          </div>
+
+          <div class="result-grid">
+            <div class="result-section">
+              <h4 class="result-section-title">Formula Comparison</h4>
+              <table class="formula-table">
+                <thead><tr><th>Formula</th><th>Est. 1RM</th></tr></thead>
+                <tbody id="formula-rows"></tbody>
+              </table>
+            </div>
+            <div class="result-section">
+              <h4 class="result-section-title">Training Percentages</h4>
+              <div id="pct-grid" class="pct-grid"></div>
+            </div>
+          </div>
+
+          <button class="btn btn-outline btn-full" id="btn-save-onerm">Save to PR Tracker</button>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top:2rem">
+        <h2>PR Tracker</h2>
+      </div>
+      <div id="onerm-tracker-list" class="cards-grid"></div>
+    </section>
+
+    <!-- ==================== METCON TAB ==================== -->
+    <section id="tab-metcon" class="tab-content">
+      <div class="section-header">
+        <h2>METCON Library</h2>
+        <button class="btn btn-primary" id="btn-new-metcon">+ New METCON</button>
+      </div>
+      <div id="metcon-list" class="cards-grid"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- =========================================================
+     MODALS
+     ========================================================= -->
+
+<!-- New / Edit Plan Modal -->
+<div id="modal-plan" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="plan-modal-title">New Workout Plan</h3>
+      <button class="modal-close" data-modal="modal-plan">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Plan Name *</label>
+        <input type="text" id="plan-name" placeholder="e.g. Push Day, Full Body A">
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="plan-description" rows="2" placeholder="Optional notes about this plan"></textarea>
+      </div>
+      <div class="exercises-section">
+        <div class="exercises-header">
+          <h4>Exercises</h4>
+          <button class="btn btn-sm btn-outline" id="btn-add-exercise">+ Add Exercise</button>
+        </div>
+        <div id="plan-exercises-list"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-modal="modal-plan">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-plan">Save Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Start / Log Workout Modal -->
+<div id="modal-start-workout" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Start Workout</h3>
+      <button class="modal-close" data-modal="modal-start-workout">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Select a Plan (or freestyle)</label>
+        <select id="select-plan-for-workout">
+          <option value="">— Freestyle Workout —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Session Name</label>
+        <input type="text" id="workout-session-name" placeholder="e.g. Monday Push, Morning Lift">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-modal="modal-start-workout">Cancel</button>
+      <button class="btn btn-primary" id="btn-confirm-start-workout">Start Workout</button>
+    </div>
+  </div>
+</div>
+
+<!-- Active Workout Session Modal -->
+<div id="modal-active-workout" class="modal-overlay hidden">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <div>
+        <h3 id="active-workout-title">Workout</h3>
+        <p id="active-workout-timer-display" class="active-timer-large">0:00</p>
+      </div>
+      <button class="btn btn-danger" id="btn-finish-workout">Finish Workout</button>
+    </div>
+    <div class="modal-body" id="active-workout-exercises"></div>
+    <div class="modal-footer">
+      <div class="form-group" style="flex:1">
+        <label>Session Notes</label>
+        <textarea id="active-workout-notes" rows="2" placeholder="How did it feel? PRs hit? Anything to remember?"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New / Edit METCON Modal -->
+<div id="modal-metcon" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="metcon-modal-title">New METCON</h3>
+      <button class="modal-close" data-modal="modal-metcon">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" id="metcon-name" placeholder="e.g. Fran, Helen, Barbara">
+        </div>
+        <div class="form-group">
+          <label>Type *</label>
+          <select id="metcon-type">
+            <option value="For Time">For Time</option>
+            <option value="AMRAP">AMRAP</option>
+            <option value="EMOM">EMOM</option>
+            <option value="Rounds For Time">Rounds For Time</option>
+            <option value="Tabata">Tabata</option>
+            <option value="Chipper">Chipper</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row two-col" id="metcon-duration-row">
+        <div class="form-group" id="metcon-time-group">
+          <label id="metcon-time-label">Time Cap (min)</label>
+          <input type="number" id="metcon-duration" placeholder="20" min="1">
+        </div>
+        <div class="form-group" id="metcon-rounds-group" style="display:none">
+          <label>Rounds</label>
+          <input type="number" id="metcon-rounds" placeholder="5" min="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description / Notes</label>
+        <textarea id="metcon-description" rows="2" placeholder="Overall description, scaling options, etc."></textarea>
+      </div>
+      <div class="exercises-section">
+        <div class="exercises-header">
+          <h4>Movements</h4>
+          <button class="btn btn-sm btn-outline" id="btn-add-metcon-movement">+ Add Movement</button>
+        </div>
+        <div id="metcon-movements-list"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-modal="modal-metcon">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-metcon">Save METCON</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log METCON Result Modal -->
+<div id="modal-log-metcon" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Log Result</h3>
+      <button class="modal-close" data-modal="modal-log-metcon">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="metcon-log-info" class="metcon-log-info-bar"></div>
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="metcon-log-date">
+        </div>
+        <div class="form-group">
+          <label id="metcon-result-label">Result</label>
+          <input type="text" id="metcon-log-result" placeholder="e.g. 3:45 or 12 rounds">
+        </div>
+      </div>
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>Performance</label>
+          <select id="metcon-log-rx">
+            <option value="Rx">Rx</option>
+            <option value="Scaled">Scaled</option>
+            <option value="Rx+">Rx+</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Feel</label>
+          <select id="metcon-log-rating">
+            <option value="">— optional —</option>
+            <option value="5">💪 Crushed It</option>
+            <option value="4">😁 Felt Great</option>
+            <option value="3">😐 Solid</option>
+            <option value="2">😓 Tough Day</option>
+            <option value="1">😵 Rough</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="metcon-log-notes" rows="2" placeholder="Scaling, how you felt, anything notable"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-modal="modal-log-metcon">Cancel</button>
+      <button class="btn btn-primary" id="btn-save-metcon-log">Save Result</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Workout Log Detail Modal -->
+<div id="modal-log-detail" class="modal-overlay hidden">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h3 id="log-detail-title">Workout Details</h3>
+      <button class="modal-close" data-modal="modal-log-detail">✕</button>
+    </div>
+    <div class="modal-body" id="log-detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger-ghost" id="btn-delete-log-from-modal">Delete Log</button>
+      <button class="btn btn-ghost" data-modal="modal-log-detail">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
